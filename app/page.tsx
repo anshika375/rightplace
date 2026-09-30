@@ -7,7 +7,9 @@ import { ALLOWED_COUNTRY, SECRET_LINK } from "@/lib/config";
 type LocationState = "pending" | "allowed" | "denied";
 
 export default function Home() {
-  const [locationState, setLocationState] = useState<LocationState>("pending");
+  // Start as "allowed" so the link shows immediately — hide it only if the
+  // geolocation check comes back as denied.
+  const [locationState, setLocationState] = useState<LocationState>("allowed");
 
   useEffect(() => {
     getCountryCode().then((code) => {
@@ -28,7 +30,7 @@ export default function Home() {
             : "You are not where you are supposed to be."}
         </p>
 
-        {locationState === "allowed" && (
+        {locationState !== "denied" && (
           <a
             href={SECRET_LINK}
             className="secret-link"
