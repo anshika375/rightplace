@@ -1,21 +1,33 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { getCountryCode } from "@/lib/location";
+import { headers } from "next/headers";
 import { ALLOWED_COUNTRY, SECRET_LINK } from "@/lib/config";
 
-type LocationState = "pending" | "allowed" | "denied";
+export const dynamic = "force-dynamic";
 
-export default function Home() {
-  // Start as "allowed" so the link shows immediately — hide it only if the
-  // geolocation check comes back as denied.
-  const [locationState, setLocationState] = useState<LocationState>("pending");
+async function getCountryFromHeaders(): Promise<string | null> {
+  const headersList = await headers();
 
-  useEffect(() => {
-    getCountryCode().then((code) => {
-      setLocationState(code === ALLOWED_COUNTRY ? "allowed" : "denied");
-    });
-  }, []);
+  // Vercel sets this automatically
+  const vercelCountry = headersList.get("x-vercel-ip-country");
+  if (vercelCountry) return vercelCountry.toUpperCase();
+
+  // Fallback: use forwarded IP to ask api.country.is
+  const forwarded = headersList.get("x-forwarded-for");
+  const ip = forwarded ? forwarded.split(",")[0].trim() : null;
+
+  try {
+    const url = ip ? `https://api.country.is/${ip}` : "https://api.country.is/";
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) return null;
+    const data = (await res.json()) as { country?: string };
+    return data.country?.toUpperCase() ?? null;
+  } catch {
+    return null;
+  }
+}
+
+export default async function Home() {
+  const country = await getCountryFromHeaders();
+  const isAllowed = country === ALLOWED_COUNTRY;
 
   return (
     <div className="outer">
@@ -27,16 +39,13 @@ export default function Home() {
         >
           His favorite place is Netherlands
         </span>
-        <p
-          className={`message ${locationState === "pending" ? "invisible" : "visible"}`}
-          aria-live="polite"
-        >
-          {locationState === "allowed"
+        <p className="message visible" aria-live="polite">
+          {isAllowed
             ? "You are where you are supposed to be."
             : "You are not where you are supposed to be."}
         </p>
 
-        {locationState === "allowed" && (
+        {isAllowed && (
           <a
             href={SECRET_LINK}
             className="secret-link"
