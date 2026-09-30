@@ -1,8 +1,8 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import { getCountryCode } from "@/lib/location";
-import { ALLOWED_COUNTRY } from "@/lib/config";
+import { ALLOWED_COUNTRY, SECRET_LINK } from "@/lib/config";
 
 type LocationState = "pending" | "allowed" | "denied";
 
@@ -27,6 +27,17 @@ export default function Home() {
             ? "You are where you are supposed to be."
             : "You are not where you are supposed to be."}
         </p>
+
+        {locationState === "allowed" && (
+          <a
+            href={SECRET_LINK}
+            className="secret-link"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Enter →
+          </a>
+        )}
       </div>
     </div>
   );
