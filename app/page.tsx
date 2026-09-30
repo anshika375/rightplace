@@ -37,7 +37,7 @@ export default function Home() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            Enter →
+            {SECRET_LINK}
           </a>
         )}
       </div>

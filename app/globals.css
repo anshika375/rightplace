@@ -66,20 +66,14 @@ body {
 
 /* ─── Secret link (visible only to allowed visitors) ─── */
 .secret-link {
-  display: inline-block;
-  margin-top: 0.5rem;
-  padding: 0.6rem 1.4rem;
-  border: 2px solid #4F46E5;
-  border-radius: 9999px;
   color: #4F46E5;
   font-size: 1rem;
-  font-weight: 500;
-  text-decoration: none;
-  transition: background 0.2s ease, color 0.2s ease;
+  font-weight: 400;
+  text-decoration: underline;
+  word-break: break-all;
 }
 
 .secret-link:hover {
-  background: #4F46E5;
-  color: #ffffff;
+  color: #3730a3;
 }
 
