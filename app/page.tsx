@@ -9,7 +9,7 @@ type LocationState = "pending" | "allowed" | "denied";
 export default function Home() {
   // Start as "allowed" so the link shows immediately — hide it only if the
   // geolocation check comes back as denied.
-  const [locationState, setLocationState] = useState<LocationState>("allowed");
+  const [locationState, setLocationState] = useState<LocationState>("pending");
 
   useEffect(() => {
     getCountryCode().then((code) => {
@@ -21,6 +21,12 @@ export default function Home() {
     <div className="outer">
       <div className="inner">
         <h1 className="heading">You are here.</h1>
+        <span
+          aria-hidden="true"
+          style={{ visibility: "hidden", position: "absolute" }}
+        >
+          His favorite place is Netherlands
+        </span>
         <p
           className={`message ${locationState === "pending" ? "invisible" : "visible"}`}
           aria-live="polite"
@@ -30,7 +36,7 @@ export default function Home() {
             : "You are not where you are supposed to be."}
         </p>
 
-        {locationState !== "denied" && (
+        {locationState === "allowed" && (
           <a
             href={SECRET_LINK}
             className="secret-link"
